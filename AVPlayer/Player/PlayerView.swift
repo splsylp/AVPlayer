@@ -510,7 +510,7 @@ extension PlayerView {
         
         let durationT = playerItem?.duration.value ?? 0
         let timescaleT = playerItem?.duration.timescale ?? 0
-        if (Float(durationT) == 0) || (Float(timescaleT) == 0) {
+        if (TimeInterval(durationT) == 0) || (TimeInterval(timescaleT) == 0) {
             return
         }
         guard let currentT = playerItem?.currentTime() else {
@@ -523,7 +523,7 @@ extension PlayerView {
             let currentTime = CMTimeGetSeconds(currentT)
             // 显示时间
             _ = refreshTimeLabelValue(CMTimeMake(Int64(currentTime), 1))
-            progressSlider.value = Float(currentTime) / (Float(durationT) / Float(timescaleT))
+            progressSlider.value = Float(TimeInterval(currentTime) / (TimeInterval(durationT) / TimeInterval(timescaleT)))
         }
         // 开始播放停止转子
         if (player.status == AVPlayerStatus.readyToPlay) {
@@ -566,25 +566,25 @@ extension PlayerView {
     func refreshTimeLabelValue(_ time: CMTime) -> String {
         
         let timescale = playerItem?.duration.timescale ?? 0
-        if Int(timescale) == 0 || CMTimeGetSeconds(time).isNaN {
+        if Int64(timescale) == 0 || CMTimeGetSeconds(time).isNaN {
             return String(format: "%02ld:%02ld/%02ld:%02ld", 0, 0, 0, 0)
         }
         
         // 当前时长进度progress
-        let proMin = Int(CMTimeGetSeconds(time)) / 60//当前分钟
-        let proSec = Int(CMTimeGetSeconds(time)) % 60//当前秒
+        let proMin = Int64(CMTimeGetSeconds(time)) / 60//当前分钟
+        let proSec = Int64(CMTimeGetSeconds(time)) % 60//当前秒
         // duration 总时长
         let durationT = playerItem?.duration.value ?? 0
-        let durMin = Int(durationT) / Int(timescale) / 60//总分钟
-        let durSec = Int(durationT) / Int(timescale) % 60//总秒
+        let durMin = Int64(durationT) / Int64(timescale) / 60//总分钟
+        let durSec = Int64(durationT) / Int64(timescale) % 60//总秒
         
         let leftTimeStr = String(format: "%02ld:%02ld", proMin, proSec )
         let rightTimeStr = String(format: "%02ld:%02ld", durMin, durSec )
         
         leftTimeLabel.text = leftTimeStr
         rightTimeLabel.text = rightTimeStr
-        totalTime = durMin * 60 + durSec
-        currentTime = proMin * 60 + proSec
+        totalTime = Int(durMin * 60 + durSec)
+        currentTime = Int(proMin * 60 + proSec)
         
         return rightTimeStr
     }
@@ -620,9 +620,9 @@ extension PlayerView {
         }
         
         let durationT = playerItem?.duration.value ?? 0
-        let total = Float(durationT) / Float(timescaleT)
+        let total = Float64(durationT) / Float64(timescaleT)
         //计算出拖动的当前秒数
-        let dragedSeconds = floorf(total * progressSlider.value)
+        let dragedSeconds = floorf(Float(total * Float64(progressSlider.value)))
         let dragedCMTime = CMTimeMake(Int64(dragedSeconds), 1)
         // 刷新时间
         _ = refreshTimeLabelValue(dragedCMTime)
@@ -719,10 +719,10 @@ extension PlayerView {
             return
         }
         let totalDuration = CMTimeGetSeconds(duration)
-        if Float(totalDuration) == 0 {
+        if TimeInterval(totalDuration) == 0 {
             return
         }
-        progressView.setProgress(Float(timeInterval) / Float(totalDuration), animated: false)
+        progressView.setProgress(Float(TimeInterval(timeInterval) / TimeInterval(totalDuration)), animated: false)
     }
     
     // 开启工具条消失的定时器
