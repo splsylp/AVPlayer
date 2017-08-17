@@ -17,9 +17,8 @@
 ### 使用
 ##### 创建播放器
 ```Swift
-playerManager = PlayerManager()
+playerManager = PlayerManager(playerFrame: frame, contentView: self.view)
 playerManager.delegate = self
-playerManager.playerViewFrame = CGRect(x: 0, y: 0, width: SCREEN_WIDTH, height: 210)
 view.addSubview(playerManager.playerView)
 ```
 ##### 初始化播放地址
