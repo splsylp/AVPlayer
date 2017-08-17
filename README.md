@@ -17,7 +17,7 @@
 ### 使用
 ##### 创建播放器
 ```Swift
-playerManager = PlayerManager(playerFrame: frame, contentView: self.view)
+playerManager = PlayerManager(playerFrame: frame, contentView: view)
 playerManager.delegate = self
 view.addSubview(playerManager.playerView)
 ```
