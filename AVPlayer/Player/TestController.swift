@@ -46,6 +46,16 @@ class TestController: UIViewController, PlayerManagerDelegate {
         return btn
     }()
     
+    lazy var jumpBtn: UIButton = {
+        let btn = UIButton()
+        btn.backgroundColor = UIColor.red
+        btn.setTitle("跳转控制器", for: .normal)
+        btn.addTarget(self, action: #selector(jumpToViewController), for: .touchUpInside)
+        btn.frame = CGRect(x: 0, y: self.videoBtn3.bottom + 100, width: 200, height: 30)
+        btn.centerX = self.view.centerX
+        return btn
+    }()
+    
     
     override func viewWillAppear(_ animated: Bool) {
         navigationController?.isNavigationBarHidden = true
@@ -59,14 +69,15 @@ class TestController: UIViewController, PlayerManagerDelegate {
         
         view.backgroundColor = UIColor.white
         
-//        playerManager = PlayerManager(playerFrame: CGRect(x: 0, y: 0, width: SCREEN_WIDTH, height: 210))
-        playerManager = PlayerManager()
-        playerManager.playerViewFrame = CGRect(x: 0, y: 0, width: SCREEN_WIDTH, height: 210)
+        // 添加视频播放器
+        playerManager = PlayerManager(playerFrame: CGRect(x: 0, y: 0, width: SCREEN_WIDTH, height: 210), contentView: self.view)
         view.addSubview(playerManager.playerView)
         
+        // 添加视频切换按钮
         view.addSubview(videoBtn)
         view.addSubview(videoBtn2)
         view.addSubview(videoBtn3)
+        view.addSubview(jumpBtn)
         
         playerManager.delegate = self
         playerManager.playUrlStr = "http://wvideo.spriteapp.cn/video/2016/0215/56c1809735217_wpd.mp4"
@@ -99,6 +110,14 @@ class TestController: UIViewController, PlayerManagerDelegate {
         let totalTime = playerManager.getTotalTime()
         print(currentTime, totalTime)
     }
+    
+    // push跳转
+    func jumpToViewController() {
+        
+        playerManager.pause()
+        navigationController?.pushViewController(ViewController(), animated: true)
+    }
+    
     
     // MARK:- PlayerManagerDelegate
     // 返回按钮点击回调

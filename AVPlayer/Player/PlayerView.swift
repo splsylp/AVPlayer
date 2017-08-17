@@ -65,6 +65,7 @@ class PlayerView: UIView, UIGestureRecognizerDelegate {
     fileprivate var rightTimeLabel = UILabel() //右侧时间
     
     // MARK:- 控件属性值
+    fileprivate var contentView = UIView()
     fileprivate var customFarme = CGRect()
     fileprivate let navigationHeight: CGFloat = 64
     fileprivate let toolBarViewH: CGFloat = FIT_SCREEN_HEIGHT(40)
@@ -85,8 +86,9 @@ class PlayerView: UIView, UIGestureRecognizerDelegate {
     
     
     // MARK:- 初始化
-    func initFrame(_ frame: CGRect) {
+    func initFrame(_ frame: CGRect, contentView: UIView) {
         self.frame = frame
+        self.contentView = contentView
         customFarme = frame
         backgroundColor = UIColor.black
     }
@@ -474,7 +476,8 @@ extension PlayerView {
         })
         self.frame = customFarme
         playerLayer.frame = CGRect(x: 0, y: 0, width: customFarme.size.width, height: customFarme.size.height)
-        window?.addSubview(self)
+        contentView.addSubview(self)
+        
         _ = self.subviews.map (
             { $0.removeFromSuperview() }
         )

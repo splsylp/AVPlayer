@@ -32,13 +32,8 @@ class PlayerManager: NSObject, PlayerViewDelegate {
     // MARK:- 属性
     public var playerView: PlayerView!
     
-    public var playerViewFrame: CGRect = CGRect.zero {
-        didSet{
-            initPlayerView(playerFrame: playerViewFrame)
-        }
-    }
     public var playUrlStr: String? {
-        didSet{
+        didSet {
             initPlayerURL()
         }
     }
@@ -57,16 +52,16 @@ class PlayerManager: NSObject, PlayerViewDelegate {
         playerView = PlayerView()
     }
     
-    init(playerFrame: CGRect) {
+    init(playerFrame: CGRect, contentView: UIView) {
         super.init()
         playerView = PlayerView()
-        initPlayerView(playerFrame: playerFrame)
+        initPlayerView(playerFrame: playerFrame, contentView: contentView)
     }
     
     // 初始化播放器控件
-    private func initPlayerView(playerFrame: CGRect) {
+    private func initPlayerView(playerFrame: CGRect, contentView: UIView) {
         
-        playerView.initFrame(playerFrame)
+        playerView.initFrame(playerFrame, contentView: contentView)
         playerView.delegate = self
         
         //计时器，循环执行(在视频暂停以及进入后台时会自动停止，恢复后自动开始)
