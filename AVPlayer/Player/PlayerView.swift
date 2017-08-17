@@ -86,11 +86,17 @@ class PlayerView: UIView, UIGestureRecognizerDelegate {
     
     
     // MARK:- 初始化
-    func initFrame(_ frame: CGRect, contentView: UIView) {
+    init(frame: CGRect, contentView: UIView) {
+        
+        super.init(frame: frame)
         self.frame = frame
         self.contentView = contentView
         customFarme = frame
         backgroundColor = UIColor.black
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
     
     deinit {

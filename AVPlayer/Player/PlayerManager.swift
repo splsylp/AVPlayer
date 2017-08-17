@@ -47,21 +47,10 @@ class PlayerManager: NSObject, PlayerViewDelegate {
     
     
     // MARK:- 初始化方法
-    override init() {
-        super.init()
-        playerView = PlayerView()
-    }
-    
     init(playerFrame: CGRect, contentView: UIView) {
         super.init()
-        playerView = PlayerView()
-        initPlayerView(playerFrame: playerFrame, contentView: contentView)
-    }
-    
-    // 初始化播放器控件
-    private func initPlayerView(playerFrame: CGRect, contentView: UIView) {
         
-        playerView.initFrame(playerFrame, contentView: contentView)
+        playerView = PlayerView(frame: playerFrame, contentView: contentView)
         playerView.delegate = self
         
         //计时器，循环执行(在视频暂停以及进入后台时会自动停止，恢复后自动开始)
@@ -76,7 +65,6 @@ class PlayerManager: NSObject, PlayerViewDelegate {
         // 注册屏幕旋转通知
         NotificationCenter.default.addObserver(self, selector: #selector(statusBarOrientationChange(_:)), name: NSNotification.Name.UIDeviceOrientationDidChange, object: UIDevice.current)
     }
-    
     
     // 初始化播放地址
     private func initPlayerURL() {
