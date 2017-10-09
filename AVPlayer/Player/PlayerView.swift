@@ -576,7 +576,8 @@ extension PlayerView {
         
         let timescale = playerItem?.duration.timescale ?? 0
         if Int64(timescale) == 0 || CMTimeGetSeconds(time).isNaN {
-            return String(format: "%02ld:%02ld/%02ld:%02ld", 0, 0, 0, 0)
+            invalidPlayURL()
+            return String(format: "%02ld:%02ld", 0, 0)
         }
         
         // 当前时长进度progress

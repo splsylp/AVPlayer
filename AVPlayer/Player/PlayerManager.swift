@@ -71,37 +71,22 @@ class PlayerManager: NSObject, PlayerViewDelegate {
         
         //视频音频设置
         do {
-            _ = try
-                AVAudioSession.sharedInstance().setCategory(AVAudioSessionCategoryPlayback, with: AVAudioSessionCategoryOptions.mixWithOthers)
+            _ = try AVAudioSession.sharedInstance().setCategory(AVAudioSessionCategoryPlayback, with: AVAudioSessionCategoryOptions.mixWithOthers)
         } catch {
             print("音视频设置捕获异常！！！！！！！")
         }
         
-        self.playerView.originalScreen() // 绘制控件视图
+        let asset = self.getAVURLAsset(urlStr: self.playUrlStr ?? "")
+        self.playerView.playerItem = AVPlayerItem(asset: asset)
+        self.playerView.playerLayer = AVPlayerLayer(player: self.playerView.player)
+        self.playerView.player.replaceCurrentItem(with: self.playerView.playerItem)
         
-        // 苹果推荐初始化方法
-        DispatchQueue.global().async {
-            let asset = self.getAVURLAsset(urlStr: self.playUrlStr ?? "")
-            if asset.duration.seconds == 0 {
-                print("无效的路径或者网络异常")
-                DispatchQueue.main.async {
-                    self.playerView.invalidPlayURL() // 刷新无效播放地址视图状态
-                }
-                return
-            }
-            self.playerView.playerItem = AVPlayerItem(asset: asset)
-            self.playerView.playerLayer = AVPlayerLayer(player: self.playerView.player)
-            self.playerView.player.replaceCurrentItem(with: self.playerView.playerItem)
-            
-            // 监听缓存进度和状态
-            self.playerView.playerItem?.addObserver(self, forKeyPath: "loadedTimeRanges", options: NSKeyValueObservingOptions.new, context: &self.timeContext)
-            self.playerView.playerItem?.addObserver(self, forKeyPath: "status", options: NSKeyValueObservingOptions.new, context: &self.statusContext)
-            
-            DispatchQueue.main.async {
-                self.playerView.originalScreen()
-                self.playerView.startLoadingAnimation()
-            }
-        }
+        // 监听缓存进度和状态
+        self.playerView.playerItem?.addObserver(self, forKeyPath: "loadedTimeRanges", options: NSKeyValueObservingOptions.new, context: &self.timeContext)
+        self.playerView.playerItem?.addObserver(self, forKeyPath: "status", options: NSKeyValueObservingOptions.new, context: &self.statusContext)
+        
+        self.playerView.originalScreen()
+        self.playerView.startLoadingAnimation()
     }
     
     // 转换url
@@ -154,31 +139,20 @@ extension PlayerManager {// MARK: 外部调用方法
         playerView.originalScreen()
         playerView.startLoadingAnimation()
         
-        DispatchQueue.global().async {
-            let asset = self.getAVURLAsset(urlStr: urlStr)
-            if asset.duration.seconds == 0 {
-                print("无效的路径或者网络异常")
-                DispatchQueue.main.async {
-                    self.playerView.invalidPlayURL() // 刷新无效播放地址视图状态
-                }
-                return
-            }
-            
-            self.playerView.playerItem?.removeObserver(self, forKeyPath: "loadedTimeRanges")
-            self.playerView.playerItem?.removeObserver(self, forKeyPath: "status")
-            self.playerView.playerItem = AVPlayerItem(asset: asset)
-            self.playerView.playerItem?.addObserver(self, forKeyPath: "loadedTimeRanges", options: NSKeyValueObservingOptions.new, context: &self.timeContext)
-            self.playerView.playerItem?.addObserver(self, forKeyPath: "status", options: NSKeyValueObservingOptions.new, context: &self.statusContext)
-            self.playerView.player.replaceCurrentItem(with: self.playerView.playerItem)
-            
-            DispatchQueue.main.async {
-                self.playerView.playerLayer = AVPlayerLayer(player: self.playerView.player)
-                self.playerView.originalScreen()
-                self.playerView.startLoadingAnimation()
-                self.playerView.seekToVideo(startTime)
-                self.play()
-            }
-        }
+        let asset = self.getAVURLAsset(urlStr: urlStr)
+        
+        self.playerView.playerItem?.removeObserver(self, forKeyPath: "loadedTimeRanges")
+        self.playerView.playerItem?.removeObserver(self, forKeyPath: "status")
+        self.playerView.playerItem = AVPlayerItem(asset: asset)
+        self.playerView.playerItem?.addObserver(self, forKeyPath: "loadedTimeRanges", options: NSKeyValueObservingOptions.new, context: &self.timeContext)
+        self.playerView.playerItem?.addObserver(self, forKeyPath: "status", options: NSKeyValueObservingOptions.new, context: &self.statusContext)
+        self.playerView.player.replaceCurrentItem(with: self.playerView.playerItem)
+        
+        self.playerView.playerLayer = AVPlayerLayer(player: self.playerView.player)
+        self.playerView.originalScreen()
+        self.playerView.startLoadingAnimation()
+        self.playerView.seekToVideo(startTime)
+        self.play()
     }
     
     // 调整视频进度

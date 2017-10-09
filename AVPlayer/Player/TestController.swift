@@ -80,7 +80,7 @@ class TestController: UIViewController, PlayerManagerDelegate {
         view.addSubview(jumpBtn)
         
         playerManager.delegate = self
-        playerManager.playUrlStr = "http://wvideo.spriteapp.cn/video/2016/0215/56c1809735217_wpd.mp4"
+        playerManager.playUrlStr = "http://baobab.wdjcdn.com/1456665467509qingshu.mp4"
         playerManager.seekToTime(0)// 跳转至第N秒的进度位置，从头播放则是0
         playerManager.play()
     }
