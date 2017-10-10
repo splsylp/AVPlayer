@@ -47,6 +47,7 @@ class PlayerView: UIView, UIGestureRecognizerDelegate {
         return AVPlayer()
     }()
     var playerItem: AVPlayerItem?
+    var lastPlayerItem: AVPlayerItem?
     var playerLayer = AVPlayerLayer()
     let shareBtn = UIButton()//分享按钮
     fileprivate var backBtn = UIButton()
@@ -531,7 +532,7 @@ extension PlayerView {
         if isDragging == false { // 当没有正在拖动进度时，才刷新时间和进度条
             let currentTime = CMTimeGetSeconds(currentT)
             // 显示时间
-            _ = refreshTimeLabelValue(CMTimeMake(Int64(currentTime), 1))
+            refreshTimeLabelValue(CMTimeMake(Int64(currentTime), 1))
             progressSlider.value = Float(TimeInterval(currentTime) / (TimeInterval(durationT) / TimeInterval(timescaleT)))
         }
         // 开始播放停止转子
@@ -572,6 +573,7 @@ extension PlayerView {
     }
     
     // 刷新显示时间
+    @discardableResult
     func refreshTimeLabelValue(_ time: CMTime) -> String {
         
         let timescale = playerItem?.duration.timescale ?? 0
@@ -635,7 +637,7 @@ extension PlayerView {
         let dragedSeconds = floorf(Float(total * Float64(progressSlider.value)))
         let dragedCMTime = CMTimeMake(Int64(dragedSeconds), 1)
         // 刷新时间
-        _ = refreshTimeLabelValue(dragedCMTime)
+        refreshTimeLabelValue(dragedCMTime)
         // 刷新进度
         DispatchQueue.main.async {
             self.seekToVideo(Int(dragedSeconds))

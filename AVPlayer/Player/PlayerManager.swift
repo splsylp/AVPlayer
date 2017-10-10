@@ -78,12 +78,9 @@ class PlayerManager: NSObject, PlayerViewDelegate {
         
         let asset = self.getAVURLAsset(urlStr: self.playUrlStr ?? "")
         self.playerView.playerItem = AVPlayerItem(asset: asset)
+        changePlayerItem()
         self.playerView.playerLayer = AVPlayerLayer(player: self.playerView.player)
         self.playerView.player.replaceCurrentItem(with: self.playerView.playerItem)
-        
-        // 监听缓存进度和状态
-        self.playerView.playerItem?.addObserver(self, forKeyPath: "loadedTimeRanges", options: NSKeyValueObservingOptions.new, context: &self.timeContext)
-        self.playerView.playerItem?.addObserver(self, forKeyPath: "status", options: NSKeyValueObservingOptions.new, context: &self.statusContext)
         
         self.playerView.originalScreen()
         self.playerView.startLoadingAnimation()
@@ -101,6 +98,25 @@ class PlayerManager: NSObject, PlayerViewDelegate {
             url = URL(fileURLWithPath: encodeStr)
         }
         return AVURLAsset(url: url!)
+    }
+    
+    // 改变item
+    fileprivate func changePlayerItem() {
+        if playerView.lastPlayerItem == playerView.playerItem {
+            return
+        }
+        
+        if let item = playerView.lastPlayerItem {
+            item.removeObserver(self, forKeyPath: "status")
+            item.removeObserver(self, forKeyPath: "loadedTimeRanges")
+        }
+        
+        playerView.lastPlayerItem = playerView.playerItem
+        
+        if let item = playerView.playerItem {
+            item.addObserver(self, forKeyPath: "status", options: NSKeyValueObservingOptions.new, context: &statusContext)
+            item.addObserver(self, forKeyPath: "loadedTimeRanges", options: NSKeyValueObservingOptions.new, context: &timeContext)
+        }
     }
     
     deinit {
@@ -139,20 +155,19 @@ extension PlayerManager {// MARK: 外部调用方法
         playerView.originalScreen()
         playerView.startLoadingAnimation()
         
-        let asset = self.getAVURLAsset(urlStr: urlStr)
+        let asset = getAVURLAsset(urlStr: urlStr)
+        playerView.playerItem = AVPlayerItem(asset: asset)
+        changePlayerItem()
+        playerView.player.replaceCurrentItem(with: playerView.playerItem)
         
-        self.playerView.playerItem?.removeObserver(self, forKeyPath: "loadedTimeRanges")
-        self.playerView.playerItem?.removeObserver(self, forKeyPath: "status")
-        self.playerView.playerItem = AVPlayerItem(asset: asset)
-        self.playerView.playerItem?.addObserver(self, forKeyPath: "loadedTimeRanges", options: NSKeyValueObservingOptions.new, context: &self.timeContext)
-        self.playerView.playerItem?.addObserver(self, forKeyPath: "status", options: NSKeyValueObservingOptions.new, context: &self.statusContext)
-        self.playerView.player.replaceCurrentItem(with: self.playerView.playerItem)
+        playerView.playerLayer.removeFromSuperlayer()
+        playerView.playerLayer = AVPlayerLayer(player: playerView.player)
+        playerView.layer.addSublayer(playerView.playerLayer)
         
-        self.playerView.playerLayer = AVPlayerLayer(player: self.playerView.player)
-        self.playerView.originalScreen()
-        self.playerView.startLoadingAnimation()
-        self.playerView.seekToVideo(startTime)
-        self.play()
+        playerView.originalScreen()
+        playerView.startLoadingAnimation()
+        playerView.seekToVideo(startTime)
+        play()
     }
     
     // 调整视频进度
@@ -170,12 +185,9 @@ extension PlayerManager {// MARK: 外部调用方法
     func getTotalTime() -> Int {
         return playerView.totalTime
     }
-}
-
-
-extension PlayerManager {
     
-    // MARK:- PlayerView代理方法
+    
+    // MARK: PlayerView代理方法
     // 返回按钮点击代理
     func videoViewBackButtonClicked() {
         
@@ -188,7 +200,6 @@ extension PlayerManager {
         delegate?.playerViewShare()
     }
 }
-
 
 extension PlayerManager {
     

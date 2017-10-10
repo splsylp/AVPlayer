@@ -81,7 +81,7 @@ class TestController: UIViewController, PlayerManagerDelegate {
         
         playerManager.delegate = self
         playerManager.playUrlStr = "http://baobab.wdjcdn.com/1456665467509qingshu.mp4"
-        playerManager.seekToTime(0)// 跳转至第N秒的进度位置，从头播放则是0
+        playerManager.seekToTime(5)// 跳转至第N秒的进度位置，从头播放则是0
         playerManager.play()
     }
     
@@ -97,7 +97,7 @@ class TestController: UIViewController, PlayerManagerDelegate {
             urlStr = "http://baobab.wdjcdn.com/1457162012752491010143.mp4"
             startTime = 15
         } else {
-            urlStr = "htt"
+            urlStr = ""
             startTime = 0
         }
         // 传入要切换的播放地址和定位的时间(秒)
